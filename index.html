@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Arduino 3-in-1 Smart Car 🚗⚡</title>
+
+<style>
+  :root{
+    --bg:#020409;
+    --card:#0b1220;
+    --text:#ffffff;
+    --red:#ff2e2e;
+  }
+
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:Arial, sans-serif;
+    overflow-x:hidden;
+    color:var(--text);
+  }
+
+  h1,h2{
+    font-weight:900;
+    text-align:center;
+    color:var(--red);
+  }
+
+  .container{
+    width:90%;
+    max-width:1050px;
+    margin:30px auto;
+    padding:20px;
+    border-radius:16px;
+    position:relative;
+    border:3px solid transparent;
+    animation:rgbBorder 4s infinite linear;
+    box-shadow:0 0 25px rgba(255,0,100,0.4);
+  }
+
+  @keyframes rgbBorder {
+    0%{border-color:red;}
+    25%{border-color:yellow;}
+    50%{border-color:lime;}
+    75%{border-color:aqua;}
+    100%{border-color:magenta;}
+  }
+
+  .section{
+    margin:22px 0;
+    padding:18px;
+    border-radius:14px;
+    background:var(--card);
+    border:2px solid transparent;
+    animation:rgbBorder 4s infinite linear;
+    transition:0.3s;
+  }
+
+  .section:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 25px rgba(255,255,255,0.6);
+  }
+
+  ul{
+    list-style:none;
+    line-height:34px;
+    font-size:18px;
+  }
+
+  /* Floating glowing particles */
+  .particle{
+    position:absolute;
+    width:7px;height:7px;
+    border-radius:50%;
+    animation:float 6s infinite ease-in-out;
+    opacity:0.75;
+  }
+  @keyframes float{
+    0%{transform:translateY(0);}
+    50%{transform:translateY(-45px);}
+    100%{transform:translateY(0);}
+  }
+
+  footer{
+    text-align:center;
+    margin-top:25px;
+    font-size:15px;
+    color:#bbbbbb;
+  }
+
+</style>
+</head>
+<body>
+
+<script>
+  const cols=["red","yellow","lime","aqua","magenta"];
+  for(let i=0;i<50;i++){
+    const p=document.createElement("div");
+    p.classList.add("particle");
+    p.style.background=cols[Math.floor(Math.random()*cols.length)];
+    p.style.top=Math.random()*window.innerHeight+"px";
+    p.style.left=Math.random()*window.innerWidth+"px";
+    document.body.appendChild(p);
+  }
+</script>
+
+<div class="container">
+
+  <h1>Arduino 3-in-1 Smart Car 🚗⚡</h1>
+
+  <div class="section">
+    <h2>🤝 Team Members</h2>
+    <ul>
+      <li>⭐ Sudaim (9M1)</li>
+      <li>⭐ Mithun Raj (9M1)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>🔥 Features</h2>
+    <ul>
+      <li>📱 Bluetooth Controlled</li>
+      <li>🎙️ Voice Command Control</li>
+      <li>🚧 Obstacle Avoidance</li>
+      <li>🔄 Multi Mode Switching</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>🛠️ Components + Quantity</h2>
+    <ul>
+      <li>Arduino UNO — x1</li>
+      <li>Ultrasonic Sensor — x1</li>
+      <li>Motor Driver L298N — x1</li>
+      <li>DC Motors — x4</li>
+      <li>Bluetooth HC-05 — x1</li>
+      <li>IR Sensors — x2</li>
+      <li>Battery Pack — x1</li>
+      <li>Chassis — x1</li>
+      <li>Jumper Wires — Many</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>🔧 How It Works</h2>
+    <ul>
+      <li>🔋 Battery powers Arduino and motors</li>
+      <li>🧠 Arduino reads commands and controls everything</li>
+      <li>⚙️ Motor Driver moves the car in all directions</li>
+      <li>📡 Bluetooth connects phone to car for controlling moves</li>
+      <li>🎙️ Voice commands convert speech to actions like Forward or Stop</li>
+      <li>📏 Ultrasonic sensor avoids obstacles smartly</li>
+    </ul>
+  </div>
+
+  <footer>
+    Made with ❤️ by Sudaim and Mithun — 9M1
+  </footer>
+
+</div>
+</body>
+</html>
