@@ -1,176 +1,202 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arduino 3-in-1 Smart Car 🚗⚡</title>
-
 <style>
-  :root{
-    --bg:#020409;
-    --card:#0b1220;
-    --text:#ffffff;
-    --red:#ff2e2e;
-  }
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
 
-  body{
-    margin:0;
-    background:var(--bg);
-    font-family:Arial, sans-serif;
-    overflow-x:hidden;
-    color:var(--text);
-  }
-
-  h1,h2{
-    font-weight:900;
-    text-align:center;
-    color:var(--red);
-  }
-
-  .container{
-    width:90%;
-    max-width:1050px;
-    margin:30px auto;
-    padding:20px;
-    border-radius:16px;
-    position:relative;
-    border:3px solid transparent;
-    animation:rgbBorder 4s infinite linear;
-    box-shadow:0 0 25px rgba(255,0,100,0.4);
-  }
-
-  @keyframes rgbBorder {
-    0%{border-color:red;}
-    25%{border-color:yellow;}
-    50%{border-color:lime;}
-    75%{border-color:aqua;}
-    100%{border-color:magenta;}
-  }
-
-  .section{
-    margin:22px 0;
-    padding:18px;
-    border-radius:14px;
-    background:var(--card);
-    border:2px solid transparent;
-    animation:rgbBorder 4s infinite linear;
-    transition:0.3s;
-  }
-
-  .section:hover{
-    transform:scale(1.05);
-    box-shadow:0 0 25px rgba(255,255,255,0.6);
-  }
-
-  ul{
-    list-style:none;
-    line-height:34px;
-    font-size:18px;
-  }
-
-  .particle{
-    position:absolute;
-    width:7px;height:7px;
-    border-radius:50%;
-    animation:float 6s infinite ease-in-out;
-    opacity:0.75;
-  }
-  @keyframes float{
-    0%{transform:translateY(0);}
-    50%{transform:translateY(-45px);}
-    100%{transform:translateY(0);}
-  }
-
-  footer{
-    text-align:center;
-    margin-top:25px;
-    font-size:15px;
-    color:#bbbbbb;
-  }
-
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Orbitron',sans-serif;}
+body{
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:radial-gradient(circle at center,rgba(0,255,255,0.2),rgba(0,0,0,0.9) 80%);
+  color:#fff;
+}
+canvas#particles{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  z-index:-1;
+}
+.container{
+  text-align:center;
+  animation:fadeIn 2s ease-in-out;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+h1{
+  font-size:2.5em;
+  color:#0ff;
+  text-shadow:0 0 10px #0ff,0 0 30px #0ff;
+  margin-bottom:20px;
+}
+button{
+  background:transparent;
+  border:2px solid #0ff;
+  color:#0ff;
+  padding:12px 24px;
+  margin:8px;
+  cursor:pointer;
+  font-size:1em;
+  border-radius:8px;
+  transition:all .3s;
+}
+button:hover{
+  background:#0ff;
+  color:#000;
+  box-shadow:0 0 15px #0ff,0 0 30px #0ff;
+}
+section{
+  display:none;
+  animation:fadeIn 1s ease;
+}
+section.active{display:block;}
+.back-btn{
+  margin-top:20px;
+  border-color:#ff00ff;
+  color:#ff00ff;
+}
+.back-btn:hover{background:#ff00ff;color:#000;box-shadow:0 0 15px #ff00ff,0 0 30px #ff00ff;}
+footer{
+  position:fixed;
+  bottom:10px;
+  width:100%;
+  text-align:center;
+  font-size:.9em;
+  color:#aaa;
+}
+.music-toggle{
+  position:fixed;
+  top:15px;right:15px;
+  background:rgba(0,255,255,0.2);
+  border:1px solid #0ff;
+  padding:6px 10px;
+  border-radius:5px;
+  cursor:pointer;
+  color:#0ff;
+  transition:.3s;
+}
+.music-toggle:hover{background:rgba(0,255,255,0.5);}
 </style>
 </head>
 <body>
 
-<script>
-  const cols=["red","yellow","lime","aqua","magenta"];
-  for(let i=0;i<50;i++){
-    const p=document.createElement("div");
-    p.classList.add("particle");
-    p.style.background=cols[Math.floor(Math.random()*cols.length)];
-    p.style.top=Math.random()*window.innerHeight+"px";
-    p.style.left=Math.random()*window.innerWidth+"px";
-    document.body.appendChild(p);
-  }
-</script>
+<canvas id="particles"></canvas>
+<div class="music-toggle" onclick="toggleMusic()">🎵 Music: ON</div>
 
-<div class="container">
-
+<div class="container" id="home">
   <h1>Arduino 3-in-1 Smart Car 🚗⚡</h1>
-
-  <div class="section">
-    <h2>🤝『TEAM MEMBERS』</h2>
-    <ul>
-      <li>⭐ Sudaim (9M1)</li>
-      <li>⭐ Mithun Raj (9M1)</li>
-    </ul>
+  <p>Voice Control • Bluetooth Control • Obstacle Avoidance 🤖</p>
+  <div class="btns">
+    <button onclick="show('features')">Features ⚙️</button>
+    <button onclick="show('components')">Components 🔩</button>
+    <button onclick="show('how')">How It Works 🔧</button>
+    <button onclick="show('uses')">Uses 💡</button>
+    <button onclick="show('team')">Team 👥</button>
   </div>
-
-  <div class="section">
-    <h2>🔥『FEATURES』</h2>
-    <ul>
-      <li>📱 Bluetooth Controlled</li>
-      <li>🎙️ Voice Command Control</li>
-      <li>🚧 Obstacle Avoidance</li>
-      <li>🔄 Multi Mode Switching</li>
-    </ul>
-  </div>
-
-  <div class="section">
-    <h2>🛠️ 『COMPONENTS』 </h2>
-    <ul>
-      <li>Arduino UNO </li>
-      <li>Ultrasonic Sensor </li>
-      <li>Motor Driver L298N </li>
-      <li>DC Motors </li>
-      <li>Bluetooth HC-05 </li>
-      <li>IR Sensors </li>
-      <li>Battery Pack </li>
-      <li>Chassis </li>
-      <li>Jumper Wires </li>
-    </ul>
-  </div>
-
-  <div class="section">
-    <h2>🔧『HOW IT WORKS』</h2>
-    <ul>
-      <li>🔋 Battery powers Arduino and motors</li>
-      <li>🧠 Arduino reads commands and controls everything</li>
-      <li>⚙️ Motor Driver moves the car in all directions</li>
-      <li>📡 Bluetooth connects phone to car for controlling movement</li>
-      <li>🎙️ Voice commands convert speech to actions like Forward or Stop</li>
-      <li>📏 Ultrasonic sensor avoids obstacles automatically</li>
-    </ul>
-  </div>
-
-  <div class="section">
-    <h2>✅『USES OF A REAL 3-IN-1 SMART CAR』🚗🤖</h2>
-    <ul>
-      <li>📦 Transport items in schools, hospitals, or industries</li>
-      <li>🚶 Accident prevention using obstacle sensors</li>
-      <li>🗣️ Helps those who cannot use hands for control</li>
-      <li>🏡 Home assistant for carrying small objects</li>
-      <li>🏭 Automated load movement inside factories</li>
-      <li>🚧 Enter risky or narrow areas safely</li>
-      <li>🚀 Works like future self-driving technology</li>
-    </ul>
-  </div>
-
-  <footer>
-    ✨ Project by Sudaim & Mithun Raj ✨
-    🚗⚡ Presented in Science Expo 🌈
-  </footer>
-
 </div>
+
+<section id="features">
+  <h1>Smart Features ⚙️</h1>
+  <p>🚗 Bluetooth control for easy driving.<br>
+  🗣️ Voice commands for hands-free operation.<br>
+  🚧 Obstacle avoidance sensors for safety.<br>
+  🌈 RGB lights for style and indication.<br>
+  ⚙️ Smooth motor control using Arduino Uno.</p>
+  <button class="back-btn" onclick="back()">⬅ Back</button>
+</section>
+
+<section id="components">
+  <h1>Components 🔩</h1>
+  <p>🔹 Arduino Uno<br>
+  🔹 L298N Motor Driver<br>
+  🔹 Ultrasonic Sensor<br>
+  🔹 Bluetooth Module (HC-05)<br>
+  🔹 Microphone Module<br>
+  🔹 Motors, Chassis & Battery</p>
+  <button class="back-btn" onclick="back()">⬅ Back</button>
+</section>
+
+<section id="how">
+  <h1>How It Works 🔧</h1>
+  <p>The Arduino receives inputs from sensors and Bluetooth/voice modules.<br>
+  It processes data and sends commands to the motor driver.<br>
+  The car moves accordingly, avoiding obstacles and responding to user control.<br>
+  Simple logic — powerful performance! ⚡</p>
+  <button class="back-btn" onclick="back()">⬅ Back</button>
+</section>
+
+<section id="uses">
+  <h1>Uses 💡</h1>
+  <p>🎓 Educational robotics projects<br>
+  🧠 Learning embedded systems<br>
+  🚀 Demonstrating automation<br>
+  🤖 Smart vehicle prototyping<br>
+  🔋 DIY innovation challenges</p>
+  <button class="back-btn" onclick="back()">⬅ Back</button>
+</section>
+
+<section id="team">
+  <h1>Team 👥</h1>
+  <p>💎 Sudaim & Mithun Raj (9M1)<br>
+  🧠 Designed & Programmed the Arduino Smart Car<br>
+  🎨 Developed this webpage for the Science Expo presentation!</p>
+  <button class="back-btn" onclick="back()">⬅ Back</button>
+</section>
+
+<footer>By Sudaim & Mithun Raj (9M1)</footer>
+
+<audio id="bgMusic" loop autoplay>
+  <source src="https://cdn.pixabay.com/download/audio/2023/03/30/audio_d42276f3e3.mp3?filename=futuristic-beat-145257.mp3" type="audio/mp3">
+</audio>
+
+<script>
+// --- Section switching ---
+const home=document.getElementById('home');
+const sections=document.querySelectorAll('section');
+function show(id){
+  home.style.display='none';
+  sections.forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function back(){
+  sections.forEach(s=>s.classList.remove('active'));
+  home.style.display='block';
+}
+
+// --- Music toggle ---
+const music=document.getElementById('bgMusic');
+const toggle=document.querySelector('.music-toggle');
+let musicOn=true;
+function toggleMusic(){
+  if(musicOn){music.pause();toggle.textContent='🎵 Music: OFF';}
+  else{music.play();toggle.textContent='🎵 Music: ON';}
+  musicOn=!musicOn;
+}
+
+// --- Particle background ---
+const canvas=document.getElementById('particles');
+const ctx=canvas.getContext('2d');
+let w,h,particles=[];
+function resize(){w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight;}
+window.addEventListener('resize',resize);resize();
+class Particle{
+  constructor(){this.x=Math.random()*w;this.y=Math.random()*h;this.vx=(Math.random()-0.5)*1;this.vy=(Math.random()-0.5)*1;this.size=Math.random()*2;}
+  draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fillStyle=`hsl(${(this.x/innerWidth)*360},100%,50%)`;ctx.fill();}
+  update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>w)this.vx*=-1;if(this.y<0||this.y>h)this.vy*=-1;}
+}
+for(let i=0;i<120;i++)particles.push(new Particle());
+function animate(){
+  ctx.fillStyle='rgba(0,0,0,0.1)';
+  ctx.fillRect(0,0,w,h);
+  particles.forEach(p=>{p.update();p.draw();});
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
 </body>
 </html>
