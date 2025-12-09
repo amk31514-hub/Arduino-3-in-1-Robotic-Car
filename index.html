@@ -1,202 +1,379 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Arduino 3-in-1 Smart Car 🚗⚡</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>ESP32 2-in-1 Smart Car 🚗⚡</title>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
 
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Orbitron',sans-serif;}
-body{
-  height:100vh;
-  overflow:hidden;
+* { 
+  margin:0; 
+  padding:0; 
+  box-sizing:border-box; 
+  font-family:'Orbitron',sans-serif; 
+}
+
+body {
+  min-height:100vh;
+  background:#000;
+  color:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:radial-gradient(circle at center,rgba(0,255,255,0.2),rgba(0,0,0,0.9) 80%);
-  color:#fff;
+  padding:10px;
+  overflow-x:hidden;
 }
-canvas#particles{
+
+canvas#particles { 
+  position:fixed; 
+  top:0; 
+  left:0; 
+  width:100%; 
+  height:100%; 
+  z-index:-1; 
+}
+
+/* Loader */
+#loading {
   position:fixed;
-  top:0;left:0;
-  width:100%;height:100%;
-  z-index:-1;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:#000;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  z-index:50;
 }
+
+.spinner{
+  position:relative;
+  width:80px;
+  height:80px;
+  margin-bottom:15px;
+}
+.spinner div{
+  position:absolute;
+  border:5px solid transparent;
+  border-top:5px solid #0ff;
+  border-radius:50%;
+  width:100%; height:100%;
+  animation:spin 1s linear infinite;
+}
+.spinner div:nth-child(2){
+  border-top-color:#0ff;
+  width:65%; height:65%;
+  top:17.5%; left:17.5%;
+  animation-duration:1.5s;
+}
+.spinner div:nth-child(3){
+  border-top-color:#0ff;
+  width:35%; height:35%;
+  top:32.5%; left:32.5%;
+  animation-duration:2s;
+}
+
+@keyframes spin{
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}
+}
+
+/* Home Container */
 .container{
   text-align:center;
-  animation:fadeIn 2s ease-in-out;
+  opacity:0;
+  transition:opacity 1s ease-in-out;
+  max-width:100%;
+  width:100%;
+  padding:10px;
 }
-@keyframes fadeIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.container.show{ opacity:1; }
+
 h1{
-  font-size:2.5em;
+  font-size:2em;
   color:#0ff;
-  text-shadow:0 0 10px #0ff,0 0 30px #0ff;
-  margin-bottom:20px;
+  text-shadow:0 0 8px #0ff,0 0 20px #0ff;
+  margin-bottom:15px;
 }
+
+p{
+  font-size:0.95em;
+  line-height:1.4em;
+  margin-bottom:8px;
+}
+
 button{
   background:transparent;
   border:2px solid #0ff;
   color:#0ff;
-  padding:12px 24px;
-  margin:8px;
+  padding:10px 15px;
+  margin:6px auto;
   cursor:pointer;
   font-size:1em;
   border-radius:8px;
-  transition:all .3s;
+  transition:all 0.3s;
+  width:90%;
+  max-width:220px;
+  display:block;
 }
 button:hover{
   background:#0ff;
   color:#000;
-  box-shadow:0 0 15px #0ff,0 0 30px #0ff;
+  box-shadow:0 0 12px #0ff,0 0 25px #0ff;
 }
+
+/* Sections */
 section{
   display:none;
-  animation:fadeIn 1s ease;
+  opacity:0;
+  transform:translateY(20px);
+  animation:none;
+  border-radius:12px;
+  padding:15px;
+  background:rgba(0,0,0,0.55);
+  box-shadow:0 0 12px #0ff,0 0 25px #0ff;
+  transition:all 0.5s ease-out;
+  max-height:85vh;
+  overflow-y:auto;
+  width:95%;
+  margin:auto;
 }
-section.active{display:block;}
+section.active{
+  display:block;
+  animation:slideIn 0.6s forwards;
+}
+
+@keyframes slideIn{
+  0%{opacity:0;transform:translateY(40px);}
+  50%{opacity:1;transform:translateY(-5px);}
+  100%{opacity:1;transform:translateY(0);}
+}
+
 .back-btn{
-  margin-top:20px;
-  border-color:#ff00ff;
-  color:#ff00ff;
+  margin-top:15px;
+  border-color:#0ff;
+  color:#0ff;
 }
-.back-btn:hover{background:#ff00ff;color:#000;box-shadow:0 0 15px #ff00ff,0 0 30px #ff00ff;}
-footer{
-  position:fixed;
-  bottom:10px;
-  width:100%;
-  text-align:center;
-  font-size:.9em;
-  color:#aaa;
+.back-btn:hover{
+  background:#0ff;
+  color:#000;
 }
+
+/* Music Toggle */
 .music-toggle{
   position:fixed;
-  top:15px;right:15px;
-  background:rgba(0,255,255,0.2);
+  top:12px; right:12px;
+  background:rgba(0,255,255,0.25);
   border:1px solid #0ff;
-  padding:6px 10px;
+  padding:5px 8px;
   border-radius:5px;
   cursor:pointer;
   color:#0ff;
-  transition:.3s;
+  transition:0.3s;
+  font-size:0.9em;
 }
-.music-toggle:hover{background:rgba(0,255,255,0.5);}
+.music-toggle:hover{
+  background:rgba(0,255,255,0.5);
+}
+
+/* Footer */
+footer{
+  position:fixed;
+  bottom:5px;
+  width:100%;
+  text-align:center;
+  font-size:0.8em;
+  color:#aaa;
+}
+
+/* Responsive Text */
+@media (max-width:480px){
+  h1{ font-size:1.6em; }
+  p{ font-size:0.9em; }
+  button{ font-size:0.95em; max-width:200px; }
+  section{ padding:12px; }
+}
 </style>
 </head>
 <body>
 
 <canvas id="particles"></canvas>
+
 <div class="music-toggle" onclick="toggleMusic()">🎵 Music: ON</div>
 
-<div class="container" id="home">
-  <h1>Arduino 3-in-1 Smart Car 🚗⚡</h1>
-  <p>Voice Control • Bluetooth Control • Obstacle Avoidance 🤖</p>
-  <div class="btns">
-    <button onclick="show('features')">Features ⚙️</button>
-    <button onclick="show('components')">Components 🔩</button>
-    <button onclick="show('how')">How It Works 🔧</button>
-    <button onclick="show('uses')">Uses 💡</button>
-    <button onclick="show('team')">Team 👥</button>
-  </div>
+<audio id="bgMusic" loop autoplay>
+  <source src="happy-vibes.mp3" type="audio/mp3">
+</audio>
+
+<!-- Loading -->
+<div id="loading">
+  <div class="spinner"><div></div><div></div><div></div></div>
+  <p>Loading...</p>
 </div>
 
+<!-- Main Container -->
+<div class="container" id="home">
+  <h1>ESP32 2-in-1 Smart Car 🚗⚡</h1>
+  <p>Voice Control • WiFi Control 🌟</p>
+
+  <button onclick="show('voice')">Voice Control 🎤</button>
+  <button onclick="show('wifi')">WiFi Control 🌐</button>
+  <button onclick="show('features')">Features ⚙</button>
+  <button onclick="show('components')">Components 🔩</button>
+  <button onclick="show('how')">How It Works 🔧</button>
+  <button onclick="show('uses')">Uses 💡</button>
+  <button onclick="show('team')">Team 👥</button>
+</div>
+
+<!-- Sections -->
+<section id="voice">
+  <h1>Voice Control 🎤</h1>
+  <p>Control the smart car using voice commands via a mobile app. Commands are sent to the ESP32 via WiFi.</p>
+  <p>Example Commands:<br>• Forward<br>• Backward<br>• Left<br>• Right<br>• Stop</p>
+  <button class="back-btn" onclick="back()">⬅ Back</button>
+</section>
+
+<section id="wifi">
+  <h1>WiFi Control 🌐</h1>
+  <p>Control your ESP32 Smart Car over WiFi. Connect your mobile or PC to the ESP32 hotspot and send commands to drive the car.</p>
+  <p>Example Commands:<br>• Forward<br>• Backward<br>• Left<br>• Right<br>• Stop</p>
+  <button class="back-btn" onclick="back()">⬅ Back</button>
+</section>
+
 <section id="features">
-  <h1>Smart Features ⚙️</h1>
-  <p>🚗 Bluetooth control for easy driving.<br>
-  🗣️ Voice commands for hands-free operation.<br>
-  🚧 Obstacle avoidance sensors for safety.<br>
-  🌈 RGB lights for style and indication.<br>
-  ⚙️ Smooth motor control using Arduino Uno.</p>
+  <h1>Smart Features ⚙</h1>
+  <p>🌐 WiFi control.<br>🗣 Voice commands.<br>🌈 RGB lights.<br>⚙ Smooth motor control.</p>
   <button class="back-btn" onclick="back()">⬅ Back</button>
 </section>
 
 <section id="components">
-  <h1>Components 🔩</h1>
-  <p>🔹 Arduino Uno<br>
-  🔹 L298N Motor Driver<br>
-  🔹 Ultrasonic Sensor<br>
-  🔹 Bluetooth Module (HC-05)<br>
-  🔹 Microphone Module<br>
-  🔹 Motors, Chassis & Battery</p>
+  <h1>Components Used 🔩</h1>
+  <p><strong>1. ESP32 Dev Module</strong><br>Powerful WiFi + Bluetooth microcontroller used for IoT robotics.</p>
+  <p><strong>2. L298N Motor Driver</strong><br>Controls two DC motors with forward-backward motion.</p>
+  <p><strong>3. DC Motors</strong><br>Convert electricity into rotation to move the vehicle.</p>
+  <p><strong>4. Chassis Kit</strong><br>Strong base with wheels + mounts.</p>
+  <p><strong>5. Breadboard</strong><br>Allows no-solder circuit building.</p>
+  <p><strong>6. Battery Holder</strong><br>Supplies stable power.</p>
+  <p><strong>7. Jumper Wires</strong><br>Connect all electronic components.</p>
   <button class="back-btn" onclick="back()">⬅ Back</button>
 </section>
 
 <section id="how">
   <h1>How It Works 🔧</h1>
-  <p>The Arduino receives inputs from sensors and Bluetooth/voice modules.<br>
-  It processes data and sends commands to the motor driver.<br>
-  The car moves accordingly, avoiding obstacles and responding to user control.<br>
-  Simple logic — powerful performance! ⚡</p>
+  <p>This is a low-cost WiFi-controlled robotic vehicle built using ESP32. It can work without internet and is useful for schools, robotics learning, rural applications, and smart automation.</p>
+  <p>It generates its own WiFi hotspot, so users can control it even in remote areas. Useful for education, environment monitoring, and basic surveillance.</p>
   <button class="back-btn" onclick="back()">⬅ Back</button>
 </section>
 
 <section id="uses">
   <h1>Uses 💡</h1>
-  <p>🎓 Educational robotics projects<br>
-  🧠 Learning embedded systems<br>
-  🚀 Demonstrating automation<br>
-  🤖 Smart vehicle prototyping<br>
-  🔋 DIY innovation challenges</p>
+  <p>🎓 Educational robotics<br>🧠 Learning electronics<br>🚀 Automation demos<br>🤖 Smart car projects</p>
   <button class="back-btn" onclick="back()">⬅ Back</button>
 </section>
 
 <section id="team">
   <h1>Team 👥</h1>
-  <p>💎 Sudaim & Mithun Raj (9M1)<br>
-  🧠 Designed & Programmed the Arduino Smart Car<br>
-  🎨 Developed this webpage for the Science Expo presentation!</p>
+  <p>💎 Sudaim & Mithun Raj (9M1)<br>🎨 Webpage for Expo</p>
   <button class="back-btn" onclick="back()">⬅ Back</button>
 </section>
 
 <footer>By Sudaim & Mithun Raj (9M1)</footer>
 
-<audio id="bgMusic" loop autoplay>
-  <source src="https://cdn.pixabay.com/download/audio/2023/03/30/audio_d42276f3e3.mp3?filename=futuristic-beat-145257.mp3" type="audio/mp3">
-</audio>
-
 <script>
-// --- Section switching ---
-const home=document.getElementById('home');
+// LOADER
+const loading=document.getElementById('loading');
+const container=document.querySelector('.container');
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    triggerBlast();
+    setTimeout(()=>{
+      loading.style.display='none';
+      container.classList.add('show');
+    },500);
+  },3000);
+});
+
+// Show / Back
 const sections=document.querySelectorAll('section');
 function show(id){
-  home.style.display='none';
+  document.getElementById('home').style.display='none';
   sections.forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 function back(){
   sections.forEach(s=>s.classList.remove('active'));
-  home.style.display='block';
+  document.getElementById('home').style.display='block';
 }
 
-// --- Music toggle ---
+// Music Toggle
 const music=document.getElementById('bgMusic');
 const toggle=document.querySelector('.music-toggle');
 let musicOn=true;
 function toggleMusic(){
-  if(musicOn){music.pause();toggle.textContent='🎵 Music: OFF';}
-  else{music.play();toggle.textContent='🎵 Music: ON';}
+  if(musicOn){ music.pause(); toggle.textContent="🎵 Music: OFF"; }
+  else{ music.play(); toggle.textContent="🎵 Music: ON"; }
   musicOn=!musicOn;
 }
 
-// --- Particle background ---
+// Particles
 const canvas=document.getElementById('particles');
 const ctx=canvas.getContext('2d');
 let w,h,particles=[];
-function resize(){w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight;}
-window.addEventListener('resize',resize);resize();
+function resize(){ w=canvas.width=window.innerWidth; h=canvas.height=window.innerHeight; }
+window.addEventListener('resize',resize); resize();
+
 class Particle{
-  constructor(){this.x=Math.random()*w;this.y=Math.random()*h;this.vx=(Math.random()-0.5)*1;this.vy=(Math.random()-0.5)*1;this.size=Math.random()*2;}
-  draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fillStyle=`hsl(${(this.x/innerWidth)*360},100%,50%)`;ctx.fill();}
-  update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>w)this.vx*=-1;if(this.y<0||this.y>h)this.vy*=-1;}
+  constructor(x,y,vx,vy,size,color){
+    this.x=x||Math.random()*w;
+    this.y=y||Math.random()*h;
+    this.vx=vx!==undefined?vx:(Math.random()-0.5)*1;
+    this.vy=vy!==undefined?vy:(Math.random()-0.5)*1;
+    this.size=size||Math.random()*2+0.5;
+    this.color=color||"hsl(180,100%,50%)";
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+    ctx.fillStyle=this.color;
+    ctx.fill();
+  }
+  update(){
+    this.x+=this.vx;
+    this.y+=this.vy;
+    if(this.x<0||this.x>w)this.vx*=-1;
+    if(this.y<0||this.y>h)this.vy*=-1;
+  }
 }
 for(let i=0;i<120;i++)particles.push(new Particle());
 function animate(){
-  ctx.fillStyle='rgba(0,0,0,0.1)';
+  ctx.fillStyle="rgba(0,0,0,0.15)";
   ctx.fillRect(0,0,w,h);
   particles.forEach(p=>{p.update();p.draw();});
   requestAnimationFrame(animate);
 }
 animate();
+
+// Blast
+function triggerBlast(){
+  const blastParticles=[];
+  for(let i=0;i<150;i++){
+    const angle=Math.random()*Math.PI*2;
+    const speed=Math.random()*8+2;
+    blastParticles.push(new Particle(w/2,h/2,Math.cos(angle)*speed,Math.sin(angle)*speed,Math.random()*3+1,'#ff0000'));
+  }
+  let frames=0;
+  function blastAnim(){
+    ctx.fillStyle='rgba(0,0,0,0.2)';
+    ctx.fillRect(0,0,w,h);
+    blastParticles.forEach(p=>{p.update();p.draw();});
+    frames++;
+    if(frames<30) requestAnimationFrame(blastAnim);
+  }
+  blastAnim();
+}
 </script>
+
 </body>
 </html>
